@@ -1,0 +1,15 @@
+!IF 0
+
+Copyright (C) Microsoft Corporation, 1997 - 1999
+
+Module Name:
+
+    sources.
+
+!ENDIF
+
+TARGETNAME=shdpci_filter
+TARGETPATH=obj
+TARGETTYPE=DRIVER
+SOURCES=shdpci_filter.c
+

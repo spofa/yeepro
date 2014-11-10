@@ -1,0 +1,81 @@
+#========================
+# 接口配置
+#========================
+pushd interface
+
+reset all
+
+
+popd
+# 接口配置结束
+
+#========================
+# 接口配置
+#========================
+pushd interface ipv6
+
+uninstall
+
+
+popd
+# 接口配置结束
+
+
+
+# ----------------------------------
+# ISATAP 配置
+# ----------------------------------
+pushd interface ipv6 isatap
+
+
+
+popd
+# ISATAP 配置结束
+
+
+
+# ----------------------------------
+# 6to4 配置
+# ----------------------------------
+pushd interface ipv6 6to4
+
+reset
+
+
+
+popd
+# 6to4 配置结束
+
+#=============
+# 端口代理配置
+#=============
+pushd interface portproxy
+
+reset
+
+
+popd
+# 端口代理配置结束
+
+
+
+# ---------------------------------- 
+# 接口 IP 配置         
+# ---------------------------------- 
+pushd interface ip
+
+
+# "net1" 的接口 IP  配置
+
+set address name="net1" source=static addr=201.123.115.31 mask=255.255.0.0
+set address name="net1" gateway=201.123.115.254 gwmetric=0
+set dns name="net1" source=static addr=208.67.220.220 register=PRIMARY
+add dns name="net1" addr=202.101.172.35 index=2
+add dns name="net1" addr=201.123.115.254 index=3
+set wins name="net1" source=static addr=none
+
+
+popd
+# 接口 IP 配置结束
+
+

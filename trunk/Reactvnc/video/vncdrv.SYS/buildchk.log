@@ -1,0 +1,6 @@
+Compiling j:\src\ultravnc\vncdrv directory ********************
+'nmake.exe /c BUILDMSG=Stop. -i NTTEST= UMTEST= NOLINK=1 386=1'
+NMAKE :  U1073: don't know how to make 'vncdrv.def'
+Stop.
+BUILD: nmake.exe /c BUILDMSG=Stop. -i NTTEST= UMTEST= NOLINK=1 386=1 failed - rc = 2
+Compile errors: not linking j:\src\ultravnc\vncdrv directory ********************

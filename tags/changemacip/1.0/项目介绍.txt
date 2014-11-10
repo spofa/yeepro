@@ -1,0 +1,41 @@
+Changmacip项目
+	用于突破采用MAC地址和IP地址来封锁局域网用户上网的情况，通过伪装可以上网机子的MAC和IP，实现上网。
+
+步骤如下：
+1.获取本机的接口配置
+  netsh -c interface dump > .\nativeip.txt
+
+2.另外复制一份nativeip.txt改名为newip.txt，修改如下部分：
+  set address name="net1" source=static addr=可上网机子的IP mask=可上网机子的掩码
+  set address name="net1" gateway=可上网机子的网关 gwmetric=0
+  set dns name="自己网络接口名字" source=static addr=dns服务器地址（任意） register=PRIMARY
+  set wins name="自己网络接口名字" source=static addr=none
+  注：网络接口名字，可以通过ipconfig/all查看
+
+3.打开注册表regedit，导出HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E972-E325-11CE-BFC1-08002bE10318}\0001到文件native.reg，可能不同系统位置不同，可以查找“networkaddress”或者“MatchingDeviceId”
+
+4.另外复制一份native.reg改名为new.reg,修改如下部分：
+  networkaddress值改成“可上网机子的MAC地址”
+
+5.打开changmacip.bat,修改如下部分：
+  @echo native computer name
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\ComputerName\ComputerName" /v "ComputerName" /d "自己机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Tcpip\Parameters" /v "NV Hostname" /d "自己机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Tcpip\Parameters" /v "Hostname" /d "自己机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" /v "ComputerName" /d "自己机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "NV Hostname" /d "自己机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "Hostname" /d "自己机器名" /f
+
+  @echo new computer name
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\ComputerName\ComputerName" /v "ComputerName" /d "可上网机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Tcpip\Parameters" /v "NV Hostname" /d "可上网机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Tcpip\Parameters" /v "Hostname" /d "可上网机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" /v "ComputerName" /d "可上网机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "NV Hostname" /d "可上网机器名" /f
+  reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" /v "Hostname" /d "可上网机器名" /f
+
+6.下载CHOICE.EXE和devcon.exe
+   devcon.exe用于启停网卡
+   CHOICE.EXE用于选择切换和恢复
+
+7.点击changemacip.bat

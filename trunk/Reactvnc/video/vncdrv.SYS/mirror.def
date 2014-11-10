@@ -1,0 +1,7 @@
+LIBRARY vncdrv.SYS
+
+EXPORTS
+    DriverEntry
+    memstruct
+    memtructarray
+

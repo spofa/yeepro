@@ -1,0 +1,17 @@
+TARGETNAME=vncdrv
+TARGETTYPE=EXPORT_DRIVER
+TARGETPATH=..\output
+TARGETPATHLIB=..\output
+DLLDEF=mirror.def
+TARGETLIBS=$(DDK_LIB_PATH)\videoprt.lib \
+           $(DDK_LIB_PATH)\wdm.lib
+
+AXP64_FLAGS=/QA21164
+
+INCLUDES=..\inc;..\..\inc
+
+
+
+SOURCES=mirror.c \
+        mirror.rc
+

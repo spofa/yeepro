@@ -1,0 +1,11 @@
+TARGETNAME=vnccom
+TARGETPATH=..\output
+TARGETTYPE=DRIVER
+TARGETLIBS=..\output\i386\vncdrv.lib
+
+
+INCLUDES=..\inc;..\..\inc;..\..\..\inc;$(DDK_INC_PATH)
+
+SOURCES=vnccom.c \
+        vnccom.rc
+

@@ -1,0 +1,63 @@
+Ultravnc逆向工程
+
+一.Ultravnc核心文件
+vncdrv.dll	显示驱动
+vncdrv.sys	微端口驱动
+vnccom.SYS	有可能是vncdrv.sys独立出来的部分
+vnchelp.dll	有可能是vncdrv.dll独立出来的部分
+
+二.设置编译环境
+1.下载ddkbuild.cmd
+2.设置环境变量。变量名：WXPBASE，变量值：D:\NTDDK
+3.拷贝ddkbuild.cmd，到工程目录。
+4.控制台：ddkbuild -WXP fre.
+
+三.反汇编vncdrv.sys
+1.拷贝D:\NTDDK\src\video\miniport\mirror和D:\NTDDK\src\video\inc到新的目录J:\src\Ultravnc
+2.修改mirror.rc（文件属性）,或者使用VC自带的资源编辑器编辑
+  #define VER_FILEDESCRIPTION_STR     "Ultravnc Mirror Driver"
+  #define VER_INTERNALNAME_STR        "vncdrv.sys"
+  #define VER_ORIGINALFILENAME_STR    "vncdrv.sys"
+3.修改sources，生成vncdrv.sys
+  TARGETNAME=vncdrv         驱动最终生成的名字
+  TARGETTYPE=EXPORT_DRIVER  否则不能导出DriverEntry等一些函数
+  DLLDEF=mirror.def         否则link失败
+#4.修改mirror.def，添加导出函数和变量
+  memstruct
+  memtructarray
+5.测试生成驱动，控制台下输入ddkbuild -WXP fre.
+6.videoprt.sys, videoprt.lib, video.h, Videoportxxx函数
+
+四.反汇编vnccom.SYS
+1.有可能是vncdrv.sys独立出来,用于与上层（winvnc.exe）通讯的部分。使用了vncdrv.sys导出的变量memstruct和memtructarray。
+2. DriverEntry{
+   DeviceObject = 0;
+   RtlInitUnicodeString(&DeviceName, L"\\Device\\VNCIOCTL");	//注意这里
+   v3 = DriverObject;
+   result = IoCreateDevice(DriverObject, 0, &DeviceName, 0x22u, 0, 0, &DeviceObject);}
+
+
+五.反汇编vncdrv.dll
+1.在DllEntryPoint函数中调用EngLoadImage函数加载vnchelp.dll。EngFindImageProcAddress函数用于获取函数地址。
+  EngLoadImage函数说明:A driver can use EngLoadImage to map an executable image into kernel-mode memory. For example, a printer driver can call EngLoadImage to load a minidriver.EngLoadImage requires that the image file to be loaded have a .dll suffix. The driver must include this suffix in the pwszDriver string.
+
+六.反汇编vnchelp.dll
+1.有可能是vncdrv.dll独立出来的部分。使用了Engxxx函数。
+
+七.注册表
+1.显示驱动注册表，参考readme.txt(video\displays\mirror\app)和winvnc\vncdesktop.cpp函数vncDesktop::InitBitmap()。
+
+八.通信部分
+1.\winvnc\winvnc
+        vncVideoDriver::StartMirroring()还有
+	vncVideoDriver::CreateCommunicationBuffer(int screensize){
+		hFile = CreateFile( "\\\\.\\VncIoctl",	//注意这里
+            	GENERIC_READ | GENERIC_WRITE,
+            	0,
+    			NULL,
+    			CREATE_ALWAYS,
+    			FILE_ATTRIBUTE_NORMAL,
+    			NULL);
+	}
+    winvnc.exe与vnccom.SYS通讯。
+2.注意vncVideoDriver类中StartMirroring，HardwareCursor，NoHardwareCursor，StopMirroring调用了ExtEscape函数。
